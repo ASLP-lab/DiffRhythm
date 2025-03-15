@@ -24,6 +24,9 @@ import os
 import numpy as np
 from huggingface_hub import hf_hub_download
 
+from sys import path
+path.append(os.getcwd())
+
 from model import DiT, CFM
 
 
@@ -186,7 +189,7 @@ def parse_lyrics(lyrics: str):
 
 class CNENTokenizer:
     def __init__(self):
-        with open("./g2p/g2p/vocab.json", "r") as file:
+        with open("./g2p/g2p/vocab.json", "r", encoding='utf-8') as file:
             self.phone2id: dict = json.load(file)["vocab"]
         self.id2phone = {v: k for (k, v) in self.phone2id.items()}
         from g2p.g2p_generation import chn_eng_g2p

@@ -99,28 +99,49 @@ brew install espeak-ng
 # For Windows
 # Please visit https://github.com/espeak-ng/espeak-ng/releases to download .msi installer
 
-## python environment
+## create python environment
 conda create -n diffrhythm python=3.10
 conda activate diffrhythm
+
+## OR you can use classic Python virtual enviroment instead of conda
+python -m venv venv
+# activate venv on Linux
+source venv/bin/activate
+# activate venv on Windows
+venv\Scripts\activate
+
+## install requirements
 pip install -r requirements.txt
 ```
 
-Now, you can simply use the inference script:
+On Linux you can now simply use the inference script:
 ```bash
 # For inference using a reference WAV file
 bash scripts/infer_wav_ref.sh
-```
-or
-```bash
 # For inference using a text prompt reference
 bash scripts/infer_prompt_ref.sh
 ```
 
+But before running the inference on Windows, make sure you set the user enviroment variables:\
+`PHONEMIZER_ESPEAK_LIBRARY` -> `C:\Program Files\eSpeak NG\libespeak-ng.dll`\
+`PHONEMIZER_ESPEAK_PATH` -> `C:\Program Files\eSpeak NG`\
+Change `C:\Program Files\eSpeak NG` to your eSpeak installation directory and reboot your PC to apply changes.
+
+*Installing Japanese voices, mbrola binaries and unpacking an mbrola_ph folder (as described [here](https://github.com/ASLP-lab/DiffRhythm/issues/15) and [here](https://github.com/ASLP-lab/DiffRhythm/issues/22)) are **no longer required** when running on Windows. See https://github.com/ASLP-lab/DiffRhythm/issues/17#issuecomment-2705058729, [this](https://github.com/ASLP-lab/DiffRhythm/commit/2ea9424274df10670ddc613b5d61cc16d13e2b88) and [this commit](https://github.com/ASLP-lab/DiffRhythm/commit/1ad7229e1a774c9a2a0c4888103dd4ea7176aebb).*
+
+After this, you will also be able to run inference scripts on Windows (please note that English lyrics will be used here):
+```batch
+rem : For inference using a reference WAV file
+call scripts\infer_wav_ref.bat
+rem : For inference using a text prompt reference
+call scripts\infer_prompt_ref.bat
+```
+
 Example files of lrc and reference audio can be found in `infer/example`.
 
-You can use [the tools](https://huggingface.co/spaces/ASLP-lab/DiffRhythm) we provide on huggingface to generate the lrc
+You can use [the tools](https://huggingface.co/spaces/ASLP-lab/DiffRhythm) we provide on huggingface to generate the lrc.
 
-**Note that DiffRhythm-base requires a minimum of 8G of VRAM. To meet the 8G VRAM requirement, ensure `chunked=True` is set in the `decode_audio` function during inference. Higher VRAM may be required if chunked decoding is disabled.**
+**Note that DiffRhythm-base requires a minimum of 8G of VRAM. To meet the 8G VRAM requirement, use the `--chunked` argument when running the inference. Higher VRAM may be required if chunked decoding is disabled.**
 
 ## Training
 

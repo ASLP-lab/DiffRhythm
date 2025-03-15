@@ -141,7 +141,7 @@ if __name__ == "__main__":
     cfm, tokenizer, muq, vae = prepare_model(device)
 
     if args.lrc_path:
-        with open(args.lrc_path, "r") as f:
+        with open(args.lrc_path, "r", encoding='utf-8') as f:
             lrc = f.read()
     else:
         lrc = ""
