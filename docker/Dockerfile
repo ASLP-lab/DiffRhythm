@@ -8,26 +8,31 @@ ARG TORCH_VERSION=""
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies for eSpeak and other requirements
+# Install system dependencies for eSpeak and other requirements (removed git)
 RUN apt-get update && apt-get install -y \
-    git \
     espeak-ng \
     && rm -rf /var/lib/apt/lists/*
 
-# Clone the DiffRhythm repository
-RUN git clone https://github.com/ASLP-lab/DiffRhythm.git .
+# Copy application code from the repository root (build context) to /app
+# This includes config/, model/, infer/, etc. BUT NOT the docker dir itself
+# if docker/ is listed in .dockerignore
+COPY . .
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+# --- Explicitly copy the requirements file from the docker subdirectory ---
+# This will OVERWRITE any requirements.txt potentially copied by "COPY . ."
+# The source path 'docker/requirements.txt' is relative to the build context (repo root)
+COPY docker/requirements.txt .
 
-# Extract torch-related versions from requirements.txt or set to empty strings if not found
+# --- PyTorch Installation Logic (Relies on docker/requirements.txt copied above) ---
+
+# Extract torch-related versions from the copied requirements.txt
 RUN TORCH_VERSION_REQ=$(grep -E "^torch==" requirements.txt | cut -d'=' -f3 || echo "") && \
     TORCHAUDIO_VERSION_REQ=$(grep -E "^torchaudio==" requirements.txt | cut -d'=' -f3 || echo "") && \
     TORCHVISION_VERSION_REQ=$(grep -E "^torchvision==" requirements.txt | cut -d'=' -f3 || echo "") && \
     TORCHMETRICS_VERSION_REQ=$(grep -E "^torchmetrics==" requirements.txt | cut -d'=' -f3 || echo "") && \
     echo "Found in requirements: torch==$TORCH_VERSION_REQ, torchaudio==$TORCHAUDIO_VERSION_REQ, torchvision==$TORCHVISION_VERSION_REQ, torchmetrics==$TORCHMETRICS_VERSION_REQ"
 
-# Install PyTorch and related packages with CUDA support if specified
+# Install PyTorch and related packages based on TORCH_VERSION build-arg
 RUN if [ ! -z "$TORCH_VERSION" ]; then \
         # Check if we need to use specific versions from requirements.txt or get the latest versions
         if [ ! -z "$TORCH_VERSION_REQ" ] && [ ! -z "$TORCHVISION_VERSION_REQ" ] && [ ! -z "$TORCHAUDIO_VERSION_REQ" ] && [ ! -z "$TORCHMETRICS_VERSION_REQ" ]; then \
@@ -69,14 +74,21 @@ RUN if [ ! -z "$TORCH_VERSION" ]; then \
                 ;; \
         esac && \
         # Install remaining requirements, skipping lines for all forced torch packages
+        echo "Installing remaining dependencies from requirements.txt..." && \
         grep -v -E "^torch==|^torchvision==|^torchaudio==|^torchmetrics==" requirements.txt > requirements_no_torch.txt && \
-        pip install --no-cache-dir --upgrade -r requirements_no_torch.txt && \
+        if [ -s requirements_no_torch.txt ]; then \
+             pip install --no-cache-dir --upgrade -r requirements_no_torch.txt; \
+        else \
+             echo "No remaining dependencies to install."; \
+        fi && \
         rm requirements_no_torch.txt; \
     else \
         # Install all requirements as specified if no specific TORCH_VERSION is provided
+        echo "TORCH_VERSION not specified, installing all dependencies from requirements.txt..." && \
         pip install --no-cache-dir --upgrade -r requirements.txt; \
     fi
 
+# --- End PyTorch Installation Logic ---
 
 # Set environment variables for eSpeak (if needed)
 ENV PHONEMIZER_ESPEAK_LIBRARY=/usr/lib/x86_64-linux-gnu/libespeak-ng.so.1
