@@ -1,9 +1,11 @@
 version: '3.8'
 services:
   diffrhythm:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      # args:
+      #  TORCH_VERSION: cuda12 # TORCH_VERSION Options = cuda12, cuda128, cuda11, rocm, xpu, cpu
     image: diffrhythm
     container_name: diffrhythm
 #    volumes:
