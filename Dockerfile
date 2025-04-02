@@ -19,9 +19,10 @@ RUN apt-get update && apt-get install -y \
 # This command now copies the root requirements.txt directly into /app
 COPY . .
 
-# --- NO LONGER NEEDED: Explicit copy from a 'docker' subdir ---
-# The line 'COPY docker/requirements.txt .' is removed as it's incorrect/unnecessary here.
-# The 'COPY . .' above already copied the root requirements.txt to /app/requirements.txt.
+# Install Rust compiler if needed for better cross-compiling support
+#RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+#ENV PATH="/root/.cargo/bin:${PATH}"
+
 
 # --- PyTorch Installation Logic (Relies on the root requirements.txt copied to /app) ---
 
