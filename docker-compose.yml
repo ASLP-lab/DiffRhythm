@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  diffrhythm:
+    build:
+      # Context remains '..' because docker-compose is likely run from the 'docker' dir,
+      # and the build context (where source files are) IS the parent directory (project root).
+      context: ..
+      # Dockerfile path is now relative to the context ('..').
+      # Since the Dockerfile is directly in the root, the path is just 'Dockerfile'.
+      dockerfile: Dockerfile
+      # args:
+      #  TORCH_VERSION: cuda12 # TORCH_VERSION Options = cuda12, cuda128, cuda11, rocm, xpu, cpu
+    image: diffrhythm
+    container_name: diffrhythm
+#    volumes:
+#      - ./output:/app/output # Example: Mount output relative to docker-compose file location
+#      - ../infer:/app/infer  # Example: Mount infer relative to project root
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true
+    # Keep container running
+    command: ["/bin/bash", "-c", "tail -f /dev/null"]
