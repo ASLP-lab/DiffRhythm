@@ -14,18 +14,18 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy application code from the repository root (build context) to /app
-# This includes config/, model/, infer/, etc. BUT NOT the docker dir itself
-# if docker/ is listed in .dockerignore
+# This includes config/, model/, infer/, etc.
+# CRUCIALLY, this also copies the root requirements.txt to /app/requirements.txt
 COPY . .
 
-# --- Explicitly copy the requirements file from the docker subdirectory ---
-# This will OVERWRITE any requirements.txt potentially copied by "COPY . ."
-# The source path 'docker/requirements.txt' is relative to the build context (repo root)
-COPY docker/requirements.txt .
+# Install Rust compiler if needed for better cross-compiling support
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-# --- PyTorch Installation Logic (Relies on docker/requirements.txt copied above) ---
+# --- PyTorch Installation Logic (Now relies on the root requirements.txt copied to /app) ---
 
-# Extract torch-related versions from the copied requirements.txt
+# Extract torch-related versions from the copied root requirements.txt
+# Note: These commands now run inside /app and read /app/requirements.txt
 RUN TORCH_VERSION_REQ=$(grep -E "^torch==" requirements.txt | cut -d'=' -f3 || echo "") && \
     TORCHAUDIO_VERSION_REQ=$(grep -E "^torchaudio==" requirements.txt | cut -d'=' -f3 || echo "") && \
     TORCHVISION_VERSION_REQ=$(grep -E "^torchvision==" requirements.txt | cut -d'=' -f3 || echo "") && \
@@ -74,6 +74,7 @@ RUN if [ ! -z "$TORCH_VERSION" ]; then \
                 ;; \
         esac && \
         # Install remaining requirements, skipping lines for all forced torch packages
+        # This now reads the root requirements.txt (at /app/requirements.txt)
         echo "Installing remaining dependencies from requirements.txt..." && \
         grep -v -E "^torch==|^torchvision==|^torchaudio==|^torchmetrics==" requirements.txt > requirements_no_torch.txt && \
         if [ -s requirements_no_torch.txt ]; then \
@@ -84,6 +85,7 @@ RUN if [ ! -z "$TORCH_VERSION" ]; then \
         rm requirements_no_torch.txt; \
     else \
         # Install all requirements as specified if no specific TORCH_VERSION is provided
+        # This now reads the root requirements.txt (at /app/requirements.txt)
         echo "TORCH_VERSION not specified, installing all dependencies from requirements.txt..." && \
         pip install --no-cache-dir --upgrade -r requirements.txt; \
     fi
