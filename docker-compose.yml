@@ -24,5 +24,7 @@ services:
               capabilities: [gpu]
     stdin_open: true
     tty: true
+    ports:
+      - 8000:8000
     # Keep container running
     command: ["/bin/bash", "-c", "tail -f /dev/null"]
