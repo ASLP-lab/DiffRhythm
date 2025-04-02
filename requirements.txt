@@ -22,3 +22,5 @@ phonemizer==3.3.0
 inflect==7.5.0
 openai
 spaces
+py3langid
+
