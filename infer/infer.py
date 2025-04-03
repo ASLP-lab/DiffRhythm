@@ -24,7 +24,7 @@ from einops import rearrange
 
 print("Current working directory:", os.getcwd())
 
-from infer_utils import (
+from .infer_utils import (
     decode_audio,
     get_lrc_token,
     get_negative_style_prompt,
