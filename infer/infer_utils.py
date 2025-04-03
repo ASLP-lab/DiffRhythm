@@ -30,6 +30,7 @@ path.append(os.getcwd())
 from model import DiT, CFM
 
 
+
 def decode_audio(latents, vae_model, chunked=False, overlap=32, chunk_size=128):
     downsampling_ratio = 2048
     io_channels = 2
@@ -136,6 +137,41 @@ def get_negative_style_prompt(device):
 
 
 @torch.no_grad()
+
+def get_audio_style_prompt(model, wav_path):
+    vocal_flag = False
+    mulan = model
+    audio, _ = librosa.load(wav_path, sr=24000)
+    audio_len = librosa.get_duration(y=audio, sr=24000)
+    
+    if audio_len <= 1:
+        vocal_flag = True
+    
+    if audio_len > 10:
+        start_time = int(audio_len // 2 - 5)
+        wav = audio[start_time*24000:(start_time+10)*24000]
+    
+    else:
+        wav = audio
+    wav = torch.tensor(wav).unsqueeze(0).to(model.device)
+    
+    with torch.no_grad():
+        audio_emb = mulan(wavs = wav) # [1, 512]
+        
+    audio_emb = audio_emb.half()
+
+    return audio_emb, vocal_flag
+
+def get_text_style_prompt(model, text_prompt):
+    mulan = model
+    
+    with torch.no_grad():
+        text_emb = mulan(texts = text_prompt) # [1, 512]
+    text_emb = text_emb.half()
+
+    return text_emb
+
+
 def get_style_prompt(model, wav_path=None, prompt=None):
     mulan = model
 
