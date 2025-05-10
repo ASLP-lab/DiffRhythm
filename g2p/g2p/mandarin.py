@@ -19,7 +19,12 @@ import os
 BLANK_LEVEL = 0
 
 # conv = G2PWConverter(style='pinyin', enable_non_tradional_chinese=True)
-resource_path = r"./g2p"
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+parent_dir = os.path.dirname(current_dir)
+resource_path = os.path.join(parent_dir)
+
 poly_all_class_path = os.path.join(
     resource_path, "sources", "g2p_chinese_model", "polychar.txt"
 )
@@ -182,8 +187,13 @@ _bopomofo_to_ipa = [
 must_not_er_words = {"女儿", "老儿", "男儿", "少儿", "小儿"}
 
 word_pinyin_dict = {}
+
+chinese_lexicon = os.path.join(
+    resource_path, "sources", "chinese_lexicon.txt"
+)
+
 with open(
-    r"./g2p/sources/chinese_lexicon.txt", "r", encoding="utf-8"
+        chinese_lexicon, "r", encoding="utf-8"
 ) as fread:
     txt_list = fread.readlines()
     for txt in txt_list:
@@ -192,8 +202,12 @@ with open(
     fread.close()
 
 pinyin_2_bopomofo_dict = {}
+
+pinyin_2_bpmf = os.path.join(
+    resource_path, "sources", "pinyin_2_bpmf.txt"
+)
 with open(
-    r"./g2p/sources/pinyin_2_bpmf.txt", "r", encoding="utf-8"
+   pinyin_2_bpmf, "r", encoding="utf-8"
 ) as fread:
     txt_list = fread.readlines()
     for txt in txt_list:
@@ -211,8 +225,11 @@ tone_dict = {
 }
 
 bopomofos2pinyin_dict = {}
+bpmf_2_pinyin = os.path.join(
+    resource_path, "sources", "bpmf_2_pinyin.txt"
+)
 with open(
-    r"./g2p/sources/bpmf_2_pinyin.txt", "r", encoding="utf-8"
+        bpmf_2_pinyin, "r", encoding="utf-8"
 ) as fread:
     txt_list = fread.readlines()
     for txt in txt_list:

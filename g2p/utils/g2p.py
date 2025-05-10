@@ -53,8 +53,12 @@ lang2backend = {
     "ko": phonemizer_ko,
     "de": phonemizer_de,
 }
+current_dir = os.path.dirname(os.path.abspath(__file__))
+mls_en = os.path.join(
+    current_dir, "mls_en.json"
+)
 
-with open("./g2p/utils/mls_en.json", "r", encoding='utf-8') as f:
+with open(mls_en, "r", encoding='utf-8') as f:
     json_data = f.read()
 token = json.loads(json_data)
 
