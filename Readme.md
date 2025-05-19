@@ -85,14 +85,14 @@ DiffRhythm (Chinese: 谛韵, Dì Yùn) is the ***first*** open-sourced diffusion
 | DiffRhythm-vae  | https://huggingface.co/ASLP-lab/DiffRhythm-vae |
 
 ## Docker installation
-You just need the 3 files inside the folder docker. Do as it follows:<br/>
+You just need the 3 files inside the `docker` folder. Do as it follows:<br/>
 - Clone the project or copy the files<br/>
-- cd into the folder<br/>
-- Edit your docker compose biding folders
-- docker compose up -d (or docker-compose up -d depending on your version)<br/>
-- docker exec -it DiffRhythm bash<br/>
+- `cd` into the `docker` folder<br/>
+- Edit your docker compose bindings in `docker-compose.yml`
+- Run `docker compose up -d` (or `docker-compose up -d`, depending on your version of Docker)<br/>
+- Run `docker exec -it DiffRhythm bash`<br/>
 
-You will be in the terminal ready for use. Just go to /home/app/scripts and run infer_prompt_ref.sh
+You will be in the terminal ready for use. Just go to `/home/app/scripts` and run `infer_prompt_ref.sh`
 ## Inference
 
 Following the steps below to clone the repository and install the environment.
