@@ -1,2 +1,2 @@
-python %~dp0..\infer\infer.py --lrc-path infer/example/eg_en.lrc --ref-audio-path infer/example/eg_cn.wav --audio-length 95 --repo_id ASLP-lab/DiffRhythm-1_2 --output-dir infer/example/output_en --chunked
+python %~dp0..\infer\infer.py --lrc-path infer/example/eg_en.lrc --ref-audio-path infer/example/eg_cn.wav --audio-length 95 --repo-id ASLP-lab/DiffRhythm-1_2 --output-dir infer/example/output_en --chunked
 pause
