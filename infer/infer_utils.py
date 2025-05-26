@@ -26,7 +26,7 @@ import numpy as np
 from huggingface_hub import hf_hub_download
 
 from sys import path
-path.append(os.getcwd())
+path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from model import DiT, CFM
 
@@ -215,7 +215,10 @@ def prepare_model(max_frames, device, repo_id="ASLP-lab/DiffRhythm-1_2"):
     dit_ckpt_path = hf_hub_download(
         repo_id=repo_id, filename="cfm_model.pt", cache_dir="./pretrained"
     )
-    dit_config_path = "./config/diffrhythm-1b.json"
+
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    dit_config_path = os.path.join(BASE_DIR, "config", "diffrhythm-1b.json")
+
     with open(dit_config_path) as f:
         model_config = json.load(f)
     dit_model_cls = DiT
@@ -341,7 +344,11 @@ def parse_lyrics(lyrics: str):
 
 class CNENTokenizer:
     def __init__(self):
-        with open("./g2p/g2p/vocab.json", "r", encoding='utf-8') as file:
+
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        vocab_path = os.path.join(BASE_DIR, "g2p", "g2p", "vocab.json")
+
+        with open(vocab_path, "r", encoding='utf-8') as file:
             self.phone2id: dict = json.load(file)["vocab"]
         self.id2phone = {v: k for (k, v) in self.phone2id.items()}
         from g2p.g2p_generation import chn_eng_g2p
