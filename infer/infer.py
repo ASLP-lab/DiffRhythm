@@ -18,6 +18,7 @@ import argparse
 import os
 import time
 import random
+from datetime import datetime
 
 import torch
 import torchaudio
@@ -210,10 +211,17 @@ if __name__ == "__main__":
     e_t = time.time() - s_t
     print(f"inference cost {e_t:.2f} seconds")
     
-    generated_song = random.sample(generated_songs, 1)[0]
-
     output_dir = args.output_dir
     os.makedirs(output_dir, exist_ok=True)
 
-    output_path = os.path.join(output_dir, "output.wav")
-    torchaudio.save(output_path, generated_song, sample_rate=44100)
+    # 循环遍历所有生成的歌曲并保存
+    for idx, generated_song in enumerate(generated_songs):
+        # 生成基于当前时间的文件名：年月日-时分秒-毫秒-序号.wav
+        current_time = datetime.now()
+        timestamp = current_time.strftime("%Y%m%d-%H%M%S")
+        millisecond = current_time.microsecond // 1000
+        filename = f"{timestamp}-{millisecond:03d}-{idx+1:02d}.wav"
+        
+        output_path = os.path.join(output_dir, filename)
+        torchaudio.save(output_path, generated_song, sample_rate=44100)
+        print(f"Generated song saved to: {output_path}")
