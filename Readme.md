@@ -11,6 +11,10 @@ Ziqian Ning, Huakang Chen, Yuepeng Jiang, Chunbo Hao, Guobin Ma, Shuai Wang, Jix
 <p align="center">
   <a href="https://huggingface.co/spaces/ASLP-lab/DiffRhythm">Huggingface Space Demo</a>
   <br>
+  <b>DiffRhythm 2</b> &nbsp;&nbsp;|&nbsp;&nbsp;
+  📑 <a href="https://arxiv.org/pdf/2510.22950">Paper</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+  🎵 <a href="https://aslp-lab.github.io/DiffRhythm2.github.io/">Demo</a>
+  <br>
   <b>DiffRhythm+</b> &nbsp;&nbsp;|&nbsp;&nbsp;
   📑 <a href="https://arxiv.org/abs/2507.12890">Paper</a> &nbsp;&nbsp;|&nbsp;&nbsp;
   🎵 <a href="https://longwaytog0.github.io/DiffRhythmPlus/">Demo</a>
