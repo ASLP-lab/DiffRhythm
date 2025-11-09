@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "D:\vscode\temp\DiffRhythm-WebUI\src\webui_fixed.py", line 94, in <module>
+    demo = gr.Interface(
+           ^^^^^^^^^^^^^
+  File "D:\Users\Administrator\miniconda3\Lib\site-packages\gradio\interface.py", line 230, in __init__
+    raise ValueError("Must provide at least one of `inputs` or `outputs`")
+ValueError: Must provide at least one of `inputs` or `outputs`

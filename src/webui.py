@@ -120,8 +120,7 @@ if __name__ == "__main__":
                 interactive=False,
                 autoplay=False,
                 show_download_button=True,
-                show_share_button=False,
-                waveform_options={"show_controls": True}
+                show_share_button=False
             )
             generate_prompt_btn.click(
                 fn=generate_from_prompt,
@@ -141,8 +140,7 @@ if __name__ == "__main__":
                 interactive=False,
                 autoplay=False,
                 show_download_button=True,
-                show_share_button=False,
-                waveform_options={"show_controls": True}
+                show_share_button=False
             )
             generate_audio_btn.click(
                 fn=generate_from_audio,
