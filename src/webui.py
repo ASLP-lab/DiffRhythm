@@ -1,6 +1,8 @@
 import gradio as gr
 import os
 import subprocess
+import shutil
+from pathlib import Path
 
 def generate_from_prompt(lrc_file, prompt, audio_length, output_dir):
     """Generate song based on LRC and text prompt."""
@@ -8,24 +10,45 @@ def generate_from_prompt(lrc_file, prompt, audio_length, output_dir):
         # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
         
+        if lrc_file is None:
+            return "Error: Please upload an LRC file first", None
+        
         lrc_path = lrc_file.name if hasattr(lrc_file, 'name') else lrc_file
         cmd = f"python3 infer/infer.py --lrc-path {lrc_path} --ref-prompt \"{prompt}\" --audio-length {audio_length} --output-dir {output_dir} --chunked --batch-infer-num 5"
-        subprocess.run(cmd, shell=True, check=True)
+        
+        print(f"Running command: {cmd}")
+        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+        print(f"Command output: {result.stdout}")
+        
         audio_file = os.path.join(output_dir, "output.wav")
+        
         # Verify the audio file exists and is not empty
         if os.path.exists(audio_file) and os.path.getsize(audio_file) > 0:
-            # Debug: Print audio file info
             abs_path = os.path.abspath(audio_file)
-            print(f"Audio file generated at: {abs_path}")
-            print(f"Audio file size: {os.path.getsize(audio_file)} bytes")
-            # Return absolute path for Gradio to access
-            return f"Song generated successfully! File size: {os.path.getsize(audio_file)} bytes", abs_path
+            file_size = os.path.getsize(audio_file)
+            print(f"✓ Audio file generated at: {abs_path}")
+            print(f"✓ Audio file size: {file_size} bytes")
+            
+            # Return the path - Gradio will handle it
+            return f"✓ Song generated successfully!
+File: {abs_path}
+Size: {file_size:,} bytes", abs_path
         else:
-            print("Error: Generated audio file is empty or missing")
-            return f"Error: Generated audio file is empty or missing", None
+            error_msg = "Error: Generated audio file is empty or missing"
+            print(error_msg)
+            return error_msg, None
+            
+    except subprocess.CalledProcessError as e:
+        error_msg = f"Error during generation:
+{e.stderr}"
+        print(error_msg)
+        return error_msg, None
     except Exception as e:
-        print(f"Error during audio generation: {str(e)}")
-        return f"Error: {str(e)}", None
+        import traceback
+        error_msg = f"Error: {str(e)}
+{traceback.format_exc()}"
+        print(error_msg)
+        return error_msg, None
 
 def generate_from_audio(lrc_file, audio_file, audio_length, output_dir):
     """Generate song based on LRC and reference audio."""
@@ -33,19 +56,47 @@ def generate_from_audio(lrc_file, audio_file, audio_length, output_dir):
         # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
         
+        if lrc_file is None:
+            return "Error: Please upload an LRC file first", None
+        if audio_file is None:
+            return "Error: Please upload a reference audio file first", None
+        
         lrc_path = lrc_file.name if hasattr(lrc_file, 'name') else lrc_file
         audio_path = audio_file.name if hasattr(audio_file, 'name') else audio_file
         cmd = f"python3 infer/infer.py --lrc-path {lrc_path} --ref-audio-path {audio_path} --audio-length {audio_length} --output-dir {output_dir} --chunked --batch-infer-num 5"
-        subprocess.run(cmd, shell=True, check=True)
+        
+        print(f"Running command: {cmd}")
+        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+        print(f"Command output: {result.stdout}")
+        
         # Verify the audio file exists and is not empty
         audio_file_path = os.path.join(output_dir, "output.wav")
+        
         if os.path.exists(audio_file_path) and os.path.getsize(audio_file_path) > 0:
             abs_path = os.path.abspath(audio_file_path)
-            return f"Song generated successfully! File size: {os.path.getsize(audio_file_path)} bytes", abs_path
+            file_size = os.path.getsize(audio_file_path)
+            print(f"✓ Audio file generated at: {abs_path}")
+            print(f"✓ Audio file size: {file_size} bytes")
+            
+            return f"✓ Song generated successfully!
+File: {abs_path}
+Size: {file_size:,} bytes", abs_path
         else:
-            return f"Error: Generated audio file is empty or missing", None
+            error_msg = "Error: Generated audio file is empty or missing"
+            print(error_msg)
+            return error_msg, None
+            
+    except subprocess.CalledProcessError as e:
+        error_msg = f"Error during generation:
+{e.stderr}"
+        print(error_msg)
+        return error_msg, None
     except Exception as e:
-        return f"Error: {str(e)}", None
+        import traceback
+        error_msg = f"Error: {str(e)}
+{traceback.format_exc()}"
+        print(error_msg)
+        return error_msg, None
 
 if __name__ == "__main__":
     with gr.Blocks(theme="soft", title="DiffRhythm V1.2 WebUI") as demo:
@@ -61,8 +112,10 @@ if __name__ == "__main__":
                 label="Preview and Download Generated Song",
                 type="filepath",
                 interactive=False,
+                autoplay=False,
                 show_download_button=True,
-                show_share_button=False
+                show_share_button=False,
+                waveform_options={"show_controls": True}
             )
             generate_prompt_btn.click(
                 fn=generate_from_prompt,
@@ -80,16 +133,28 @@ if __name__ == "__main__":
                 label="Preview and Download Generated Song",
                 type="filepath",
                 interactive=False,
+                autoplay=False,
                 show_download_button=True,
-                show_share_button=False
+                show_share_button=False,
+                waveform_options={"show_controls": True}
             )
             generate_audio_btn.click(
                 fn=generate_from_audio,
                 inputs=[lrc_input_audio, audio_input, length_audio, output_dir_audio],
                 outputs=[output_audio, audio_preview_audio]
             )
+    # Get the absolute paths for allowed directories
+    project_root = os.path.abspath(".")
+    infer_dir = os.path.abspath("infer")
+    
+    print(f"Project root: {project_root}")
+    print(f"Infer directory: {infer_dir}")
+    print(f"Allowed paths: {[project_root, infer_dir]}")
+    
     # Launch with allowed_paths to enable file access
     demo.launch(
-        allowed_paths=[os.path.abspath("infer"), os.path.abspath(".")],
-        share=False
+        allowed_paths=[project_root, infer_dir],
+        share=False,
+        server_name="127.0.0.1",
+        server_port=7860
     )
