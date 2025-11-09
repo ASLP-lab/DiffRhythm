@@ -8,4 +8,4 @@ pretrained/
 ckpt
 wandb
 *.html
-.gradio/
+.gradio/*.log
