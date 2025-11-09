@@ -26,27 +26,30 @@ def generate_from_prompt(lrc_file, prompt, audio_length, output_dir):
         if os.path.exists(audio_file) and os.path.getsize(audio_file) > 0:
             abs_path = os.path.abspath(audio_file)
             file_size = os.path.getsize(audio_file)
-            print(f"✓ Audio file generated at: {abs_path}")
-            print(f"✓ Audio file size: {file_size} bytes")
+            print(f"Audio file generated at: {abs_path}")
+            print(f"Audio file size: {file_size} bytes")
             
             # Return the path - Gradio will handle it
-            return f"✓ Song generated successfully!
-File: {abs_path}
-Size: {file_size:,} bytes", abs_path
+            msg_parts = [
+                "Song generated successfully!",
+                f"File: {abs_path}",
+                f"Size: {file_size:,} bytes"
+            ]
+            msg = "\n".join(msg_parts)
+            return msg, abs_path
         else:
             error_msg = "Error: Generated audio file is empty or missing"
             print(error_msg)
             return error_msg, None
             
     except subprocess.CalledProcessError as e:
-        error_msg = f"Error during generation:
-{e.stderr}"
+        error_msg = "Error during generation:\n" + str(e.stderr)
         print(error_msg)
         return error_msg, None
     except Exception as e:
         import traceback
-        error_msg = f"Error: {str(e)}
-{traceback.format_exc()}"
+        tb = traceback.format_exc()
+        error_msg = "Error: " + str(e) + "\n" + tb
         print(error_msg)
         return error_msg, None
 
@@ -75,26 +78,29 @@ def generate_from_audio(lrc_file, audio_file, audio_length, output_dir):
         if os.path.exists(audio_file_path) and os.path.getsize(audio_file_path) > 0:
             abs_path = os.path.abspath(audio_file_path)
             file_size = os.path.getsize(audio_file_path)
-            print(f"✓ Audio file generated at: {abs_path}")
-            print(f"✓ Audio file size: {file_size} bytes")
+            print(f"Audio file generated at: {abs_path}")
+            print(f"Audio file size: {file_size} bytes")
             
-            return f"✓ Song generated successfully!
-File: {abs_path}
-Size: {file_size:,} bytes", abs_path
+            msg_parts = [
+                "Song generated successfully!",
+                f"File: {abs_path}",
+                f"Size: {file_size:,} bytes"
+            ]
+            msg = "\n".join(msg_parts)
+            return msg, abs_path
         else:
             error_msg = "Error: Generated audio file is empty or missing"
             print(error_msg)
             return error_msg, None
             
     except subprocess.CalledProcessError as e:
-        error_msg = f"Error during generation:
-{e.stderr}"
+        error_msg = "Error during generation:\n" + str(e.stderr)
         print(error_msg)
         return error_msg, None
     except Exception as e:
         import traceback
-        error_msg = f"Error: {str(e)}
-{traceback.format_exc()}"
+        tb = traceback.format_exc()
+        error_msg = "Error: " + str(e) + "\n" + tb
         print(error_msg)
         return error_msg, None
 
