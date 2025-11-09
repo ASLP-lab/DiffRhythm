@@ -7,6 +7,10 @@ from pathlib import Path
 def generate_from_prompt(lrc_file, prompt, audio_length, output_dir):
     """Generate song based on LRC and text prompt."""
     try:
+        # Ensure output directory is within project
+        if not os.path.isabs(output_dir):
+            output_dir = os.path.abspath(output_dir)
+        
         # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
         
@@ -20,23 +24,54 @@ def generate_from_prompt(lrc_file, prompt, audio_length, output_dir):
         result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
         print(f"Command output: {result.stdout}")
         
-        audio_file = os.path.join(output_dir, "output.wav")
+        wav_file = os.path.join(output_dir, "output.wav")
+        mp3_file = os.path.join(output_dir, "output.mp3")
         
-        # Verify the audio file exists and is not empty
-        if os.path.exists(audio_file) and os.path.getsize(audio_file) > 0:
-            abs_path = os.path.abspath(audio_file)
-            file_size = os.path.getsize(audio_file)
-            print(f"Audio file generated at: {abs_path}")
-            print(f"Audio file size: {file_size} bytes")
+        # Verify the WAV file exists and is not empty
+        if os.path.exists(wav_file) and os.path.getsize(wav_file) > 0:
+            wav_size = os.path.getsize(wav_file)
+            print(f"WAV file generated at: {wav_file}")
+            print(f"WAV file size: {wav_size} bytes")
             
-            # Return the path - Gradio will handle it
-            msg_parts = [
-                "Song generated successfully!",
-                f"File: {abs_path}",
-                f"Size: {file_size:,} bytes"
-            ]
-            msg = "\n".join(msg_parts)
-            return msg, abs_path
+            # Convert WAV to MP3 using ffmpeg
+            try:
+                ffmpeg_cmd = f"ffmpeg -y -i \"{wav_file}\" -codec:a libmp3lame -qscale:a 2 \"{mp3_file}\""
+                print(f"Converting to MP3: {ffmpeg_cmd}")
+                subprocess.run(ffmpeg_cmd, shell=True, check=True, capture_output=True, text=True)
+                
+                if os.path.exists(mp3_file) and os.path.getsize(mp3_file) > 0:
+                    mp3_size = os.path.getsize(mp3_file)
+                    print(f"MP3 file created at: {mp3_file}")
+                    print(f"MP3 file size: {mp3_size} bytes")
+                    
+                    # Return the MP3 file path
+                    msg_parts = [
+                        "Song generated successfully!",
+                        f"MP3 File: {mp3_file}",
+                        f"Size: {mp3_size:,} bytes"
+                    ]
+                    msg = "\n".join(msg_parts)
+                    return msg, mp3_file
+                else:
+                    print("Warning: MP3 conversion failed, returning WAV file")
+                    msg_parts = [
+                        "Song generated (WAV only, MP3 conversion failed)",
+                        f"WAV File: {wav_file}",
+                        f"Size: {wav_size:,} bytes"
+                    ]
+                    msg = "\n".join(msg_parts)
+                    return msg, wav_file
+                    
+            except Exception as conv_error:
+                print(f"MP3 conversion error: {conv_error}")
+                print("Returning WAV file instead")
+                msg_parts = [
+                    "Song generated (WAV only, MP3 conversion failed)",
+                    f"WAV File: {wav_file}",
+                    f"Size: {wav_size:,} bytes"
+                ]
+                msg = "\n".join(msg_parts)
+                return msg, wav_file
         else:
             error_msg = "Error: Generated audio file is empty or missing"
             print(error_msg)
@@ -56,6 +91,10 @@ def generate_from_prompt(lrc_file, prompt, audio_length, output_dir):
 def generate_from_audio(lrc_file, audio_file, audio_length, output_dir):
     """Generate song based on LRC and reference audio."""
     try:
+        # Ensure output directory is within project
+        if not os.path.isabs(output_dir):
+            output_dir = os.path.abspath(output_dir)
+        
         # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
         
@@ -72,22 +111,54 @@ def generate_from_audio(lrc_file, audio_file, audio_length, output_dir):
         result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
         print(f"Command output: {result.stdout}")
         
-        # Verify the audio file exists and is not empty
-        audio_file_path = os.path.join(output_dir, "output.wav")
+        wav_file = os.path.join(output_dir, "output.wav")
+        mp3_file = os.path.join(output_dir, "output.mp3")
         
-        if os.path.exists(audio_file_path) and os.path.getsize(audio_file_path) > 0:
-            abs_path = os.path.abspath(audio_file_path)
-            file_size = os.path.getsize(audio_file_path)
-            print(f"Audio file generated at: {abs_path}")
-            print(f"Audio file size: {file_size} bytes")
+        # Verify the WAV file exists and is not empty
+        if os.path.exists(wav_file) and os.path.getsize(wav_file) > 0:
+            wav_size = os.path.getsize(wav_file)
+            print(f"WAV file generated at: {wav_file}")
+            print(f"WAV file size: {wav_size} bytes")
             
-            msg_parts = [
-                "Song generated successfully!",
-                f"File: {abs_path}",
-                f"Size: {file_size:,} bytes"
-            ]
-            msg = "\n".join(msg_parts)
-            return msg, abs_path
+            # Convert WAV to MP3 using ffmpeg
+            try:
+                ffmpeg_cmd = f"ffmpeg -y -i \"{wav_file}\" -codec:a libmp3lame -qscale:a 2 \"{mp3_file}\""
+                print(f"Converting to MP3: {ffmpeg_cmd}")
+                subprocess.run(ffmpeg_cmd, shell=True, check=True, capture_output=True, text=True)
+                
+                if os.path.exists(mp3_file) and os.path.getsize(mp3_file) > 0:
+                    mp3_size = os.path.getsize(mp3_file)
+                    print(f"MP3 file created at: {mp3_file}")
+                    print(f"MP3 file size: {mp3_size} bytes")
+                    
+                    # Return the MP3 file path
+                    msg_parts = [
+                        "Song generated successfully!",
+                        f"MP3 File: {mp3_file}",
+                        f"Size: {mp3_size:,} bytes"
+                    ]
+                    msg = "\n".join(msg_parts)
+                    return msg, mp3_file
+                else:
+                    print("Warning: MP3 conversion failed, returning WAV file")
+                    msg_parts = [
+                        "Song generated (WAV only, MP3 conversion failed)",
+                        f"WAV File: {wav_file}",
+                        f"Size: {wav_size:,} bytes"
+                    ]
+                    msg = "\n".join(msg_parts)
+                    return msg, wav_file
+                    
+            except Exception as conv_error:
+                print(f"MP3 conversion error: {conv_error}")
+                print("Returning WAV file instead")
+                msg_parts = [
+                    "Song generated (WAV only, MP3 conversion failed)",
+                    f"WAV File: {wav_file}",
+                    f"Size: {wav_size:,} bytes"
+                ]
+                msg = "\n".join(msg_parts)
+                return msg, wav_file
         else:
             error_msg = "Error: Generated audio file is empty or missing"
             print(error_msg)
