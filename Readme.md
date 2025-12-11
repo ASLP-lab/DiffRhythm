@@ -131,7 +131,7 @@ brew install espeak-ng
 conda create -n diffrhythm python=3.10
 conda activate diffrhythm
 
-## OR you can use classic Python virtual enviroment instead of conda
+## OR you can use classic Python virtual environment instead of conda
 python -m venv venv
 # activate venv on Linux
 source venv/bin/activate
