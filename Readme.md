@@ -47,7 +47,7 @@ DiffRhythm (Chinese: 谛韵, Dì Yùn) is the ***first*** open-sourced diffusion
 
     *The symphony evolves. What impossible music will you compose next?*
 
-* **2025.3.11 💻** DiffRhythm can now run on MacOS! 
+* **2025.3.11 💻** DiffRhythm can now run on macOS! 
 
 * **2025.3.9 🔥** **DiffRhythm Update: Text-to-Music and Pure Music Generation!**  
 
@@ -84,7 +84,7 @@ DiffRhythm (Chinese: 谛韵, Dì Yùn) is the ***first*** open-sourced diffusion
 - [x] Release DiffRhythm-full.
 - [x] Release training code.
 - [x] Support local deployment.
-- [x] Release paper to Arxiv.
+- [x] Release paper to arXiv.
 - [x] Online serving on Hugging Face Space.
 
 ## Model Versions
@@ -101,7 +101,7 @@ DiffRhythm (Chinese: 谛韵, Dì Yùn) is the ***first*** open-sourced diffusion
 You just need the 3 files inside the folder docker. Do as it follows:<br/>
 - Clone the project or copy the files<br/>
 - cd into the folder<br/>
-- Edit your docker compose biding folders
+- Edit your docker compose binding folders
 - docker compose up -d (or docker-compose up -d depending on your version)<br/>
 - docker exec -it DiffRhythm bash<br/>
 
@@ -111,7 +111,7 @@ You will be in the terminal ready for use. Just go to /home/app/scripts and run 
 Following the steps below to clone the repository and install the environment.
 
 ```bash 
-# clone and enter the repositry
+# clone and enter the repository
 git clone https://github.com/ASLP-lab/DiffRhythm.git
 cd DiffRhythm
 
@@ -122,7 +122,7 @@ cd DiffRhythm
 sudo apt-get install espeak-ng
 # For RedHat-like distribution (e.g. CentOS, Fedora, etc.) 
 sudo yum install espeak-ng
-# For MacOS
+# For macOS
 brew install espeak-ng
 # For Windows
 # Please visit https://github.com/espeak-ng/espeak-ng/releases to download .msi installer
@@ -131,7 +131,7 @@ brew install espeak-ng
 conda create -n diffrhythm python=3.10
 conda activate diffrhythm
 
-## OR you can use classic Python virtual enviroment instead of conda
+## OR you can use classic Python virtual environment instead of conda
 python -m venv venv
 # activate venv on Linux
 source venv/bin/activate
@@ -150,7 +150,7 @@ bash scripts/infer_wav_ref.sh
 bash scripts/infer_prompt_ref.sh
 ```
 
-But before running the inference on Windows, make sure you set the user enviroment variables:\
+But before running the inference on Windows, make sure you set the user environment variables:\
 `PHONEMIZER_ESPEAK_LIBRARY` -> `C:\Program Files\eSpeak NG\libespeak-ng.dll`\
 `PHONEMIZER_ESPEAK_PATH` -> `C:\Program Files\eSpeak NG`\
 Change `C:\Program Files\eSpeak NG` to your eSpeak installation directory and reboot your PC to apply changes.
