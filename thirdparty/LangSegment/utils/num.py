@@ -319,6 +319,11 @@ def num2str(value_string: str) -> str:
     return result
 
 
+def verbalize_amount(value_string: str) -> str:
+    """Read each number, including a decimal, as one value."""
+    return re.sub(r"\d*\.\d+|\d+", lambda match: num2str(match.group(0)), value_string)
+
+
 if __name__ == "__main__":
     
     text = ""

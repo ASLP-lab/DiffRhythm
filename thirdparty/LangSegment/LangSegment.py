@@ -31,9 +31,9 @@ from py3langid.langid import LanguageIdentifier, MODEL_FILE
 langid = LanguageIdentifier.from_pickled_model(MODEL_FILE, norm_probs=True)
 
 # Digital processing
-try:from thirdparty.LangSegment.utils.num import num2str
+try:from thirdparty.LangSegment.utils.num import verbalize_amount
 except ImportError:
-    try:from thirdparty.LangSegment.utils.num import num2str
+    try:from thirdparty.LangSegment.utils.num import verbalize_amount
     except ImportError as e:
         raise e
 
@@ -195,15 +195,7 @@ class LangSSML:
     # 【SSML】currency=按金额发音。
     # Digital processing from GPT_SoVITS num.py （thanks）
     def to_chinese_currency(num:str):
-        pattern = r'(\d+)'
-        arrs = re.split(pattern, num)
-        output = ""
-        for item in arrs:
-            if re.match(pattern,item):
-                output += num2str(item)
-            else:output += item
-        output = output.replace(".","点")
-        return output
+        return verbalize_amount(num)
     
     # 【SSML】date=按日期发音。支持 2024年08月24, 2024/8/24, 2024-08, 08-24, 24 等输入。
     def to_chinese_date(num:str):
